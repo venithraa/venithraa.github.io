@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Venithraa Ganesan Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: the page is a sheet of ECG chart paper. A live trace opens it; each project is a "strip" with its own animated readout. */
+:root{
+  --paper:#fbf7f4;
+  --card:#ffffff;
+  --ink:#1b2231;
+  --muted:#5a6375;
+  --trace:#c22f3a;
+  --teal:#1d6b74;
+  --line:#ead9d2;
+  --grid:rgba(207,86,86,.10);
+  --grid-strong:rgba(207,86,86,.22);
+  --chip:#f4ebe7;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0e1417; --card:#141c20; --ink:#e6eef0; --muted:#97a6ab;
+    --trace:#ff6f6f; --teal:#5fc9c1; --line:#243139;
+    --grid:rgba(95,201,193,.06); --grid-strong:rgba(95,201,193,.13); --chip:#1b262b;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0e1417; --card:#141c20; --ink:#e6eef0; --muted:#97a6ab;
+  --trace:#ff6f6f; --teal:#5fc9c1; --line:#243139;
+  --grid:rgba(95,201,193,.06); --grid-strong:rgba(95,201,193,.13); --chip:#1b262b;
+  color-scheme: dark;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background-color:var(--paper); color:var(--ink);
+  font-family:var(--body); font-size:17px; line-height:1.6;
+  background-image:
+    linear-gradient(var(--grid-strong) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-strong) 1px, transparent 1px),
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size:40px 40px,40px 40px,8px 8px,8px 8px;
+}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--trace); outline-offset:3px; border-radius:4px}
+h1,h2,h3{font-family:var(--display); text-wrap:balance; margin:0; line-height:1.1}
+p{margin:0}
+.wrap{max-width:1120px; margin:0 auto; padding:0 24px}
+.mono{font-family:var(--mono); font-size:.78rem; letter-spacing:.04em; color:var(--muted)}
+
+/* nav */
+nav{position:sticky; top:0; z-index:10; backdrop-filter:blur(8px);
+  background:color-mix(in srgb, var(--paper) 82%, transparent); border-bottom:1px solid var(--line)}
+nav .wrap{display:flex; align-items:center; justify-content:space-between; gap:16px; height:60px}
+.brand{font-family:var(--display); font-weight:800; font-size:1.15rem; text-decoration:none; display:flex; align-items:center; gap:10px}
+.brand svg{width:34px; height:18px}
+nav ul{list-style:none; display:flex; gap:22px; margin:0; padding:0}
+nav ul a{text-decoration:none; font-size:.92rem; color:var(--muted)}
+nav ul a:hover{color:var(--trace)}
+@media (max-width:720px){ nav ul{display:none} }
+
+/* hero */
+.hero{padding:56px 0 40px}
+.hero-top{display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap}
+.monitor{position:relative; margin:22px 0 28px; height:150px; border-top:1px dashed var(--line); border-bottom:1px dashed var(--line)}
+.monitor canvas{width:100%; height:100%; display:block}
+.monitor .readout{position:absolute; right:0; top:8px; text-align:right}
+.monitor .readout b{display:block; font-family:var(--display); font-size:2rem; color:var(--trace); line-height:1}
+.hero h1{font-size:clamp(2.6rem, 7vw, 5.4rem); font-weight:800; letter-spacing:-.03em}
+.hero h1 span{display:inline-block; animation:rise .9s cubic-bezier(.2,.8,.2,1) both}
+.hero h1 span:nth-child(2){animation-delay:.12s; color:var(--trace)}
+@keyframes rise{from{transform:translateY(30%); opacity:.2}to{transform:none; opacity:1}}
+.lede{max-width:62ch; font-size:1.2rem; margin-top:20px; color:var(--ink)}
+.lede em{font-style:normal; background:linear-gradient(transparent 62%, color-mix(in srgb,var(--trace) 22%, transparent) 62%)}
+.cta{display:flex; gap:12px; flex-wrap:wrap; margin-top:28px}
+.btn{display:inline-flex; align-items:center; gap:8px; padding:12px 20px; border-radius:999px; text-decoration:none; font-weight:600; font-size:.95rem; border:1.5px solid var(--ink); transition:transform .2s, background .2s, color .2s}
+.btn.primary{background:var(--ink); color:var(--paper)}
+.btn:hover{transform:translateY(-2px)}
+.btn.primary:hover{background:var(--trace); border-color:var(--trace)}
+.facts{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1px; margin-top:44px; background:var(--line); border:1px solid var(--line); border-radius:14px; overflow:hidden}
+.facts div{background:var(--card); padding:16px 18px}
+.facts b{display:block; font-family:var(--display); font-size:1.05rem}
+
+/* section heads */
+section{padding:64px 0}
+.head{display:flex; align-items:baseline; gap:18px; margin-bottom:28px; flex-wrap:wrap}
+.head h2{font-size:clamp(1.8rem, 3.6vw, 2.6rem); font-weight:800; letter-spacing:-.02em}
+.head .mono{flex:1; min-width:200px; border-bottom:1px solid var(--line); padding-bottom:6px}
+
+/* services */
+.services{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px}
+.svc{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:22px; display:flex; flex-direction:column; gap:10px; position:relative; overflow:hidden}
+.svc::before{content:""; position:absolute; left:0; top:0; height:3px; width:0; background:var(--trace); transition:width .5s}
+.svc:hover::before{width:100%}
+.svc svg{width:40px; height:40px; color:var(--teal)}
+.svc h3{font-size:1.2rem}
+.svc p{color:var(--muted); font-size:.95rem}
+.svc .proof{font-family:var(--mono); font-size:.72rem; color:var(--teal); margin-top:auto}
+
+/* filters */
+.filters{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:22px}
+.filters button{font:500 .85rem var(--body); padding:8px 14px; border-radius:999px; border:1px solid var(--line); background:var(--card); color:var(--ink); cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--ink); color:var(--paper); border-color:var(--ink)}
+
+/* project strips */
+.projects{display:grid; gap:18px}
+.proj{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.25fr); background:var(--card); border:1px solid var(--line); border-radius:18px; overflow:hidden; transition:box-shadow .3s, transform .3s}
+.proj:hover{box-shadow:0 18px 40px -24px color-mix(in srgb,var(--ink) 45%, transparent); transform:translateY(-2px)}
+.proj[hidden]{display:none}
+.viz{position:relative; min-height:250px; border-right:1px solid var(--line);
+  background-image:linear-gradient(var(--grid-strong) 1px, transparent 1px), linear-gradient(90deg, var(--grid-strong) 1px, transparent 1px);
+  background-size:24px 24px; display:flex; align-items:center; justify-content:center; padding:12px}
+.viz svg, .viz canvas{width:100%; height:100%; max-height:260px; display:block}
+.viz .tag{position:absolute; left:12px; top:10px}
+.body{padding:24px 26px; display:flex; flex-direction:column; gap:12px}
+.body .meta{display:flex; gap:12px; flex-wrap:wrap; align-items:center}
+.pill{font-family:var(--mono); font-size:.7rem; padding:3px 9px; border-radius:999px; background:var(--chip); color:var(--muted)}
+.pill.pub{background:color-mix(in srgb,var(--trace) 14%, transparent); color:var(--trace)}
+.body h3{font-size:1.45rem; letter-spacing:-.01em}
+.body p{color:var(--muted); font-size:.97rem; max-width:62ch}
+.rel{border-left:3px solid var(--teal); padding:6px 12px; background:color-mix(in srgb,var(--teal) 7%, transparent); border-radius:0 8px 8px 0; font-size:.92rem}
+.rel b{color:var(--teal); font-weight:600}
+.stack{display:flex; gap:6px; flex-wrap:wrap; margin-top:auto}
+.stack span{font-family:var(--mono); font-size:.7rem; border:1px solid var(--line); padding:2px 8px; border-radius:6px}
+@media (max-width:820px){ .proj{grid-template-columns:1fr} .viz{border-right:0; border-bottom:1px solid var(--line); min-height:210px} }
+
+.more{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px; margin-top:18px}
+.more div{border:1px dashed var(--line); border-radius:14px; padding:16px 18px; background:color-mix(in srgb,var(--card) 70%, transparent)}
+.more b{font-family:var(--display); display:block}
+.more p{color:var(--muted); font-size:.9rem}
+
+/* timeline */
+.timeline{position:relative; display:grid; gap:0}
+.timeline::before{content:""; position:absolute; left:118px; top:0; bottom:0; width:2px; background:var(--line)}
+.tl{display:grid; grid-template-columns:100px 1fr; gap:40px; padding:14px 0; position:relative}
+.tl::after{content:""; position:absolute; left:112px; top:22px; width:14px; height:14px; border-radius:50%; background:var(--paper); border:3px solid var(--trace)}
+.tl.edu::after{border-color:var(--teal)}
+.tl .when{font-family:var(--mono); font-size:.78rem; color:var(--muted); text-align:right; padding-top:2px}
+.tl h3{font-size:1.1rem}
+.tl .org{color:var(--trace); font-weight:600; font-size:.92rem}
+.tl.edu .org{color:var(--teal)}
+.tl p{color:var(--muted); font-size:.93rem; max-width:64ch; margin-top:4px}
+@media (max-width:620px){
+  .timeline::before{left:7px} .tl{grid-template-columns:1fr; gap:4px; padding-left:30px}
+  .tl::after{left:1px} .tl .when{text-align:left}
+}
+
+/* skills */
+.skills{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:16px}
+.sk{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px}
+.sk h3{font-size:1rem; margin-bottom:12px}
+.sk ul{list-style:none; padding:0; margin:0; display:flex; flex-wrap:wrap; gap:6px}
+.sk li{font-size:.85rem; padding:4px 10px; border-radius:999px; background:var(--chip)}
+
+.certs{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px}
+.cert{background:var(--card); border:1px solid var(--line); border-left:4px solid var(--teal); border-radius:12px; padding:16px 18px; display:flex; flex-direction:column; gap:4px}
+.cert b{font-family:var(--display); font-size:1.02rem; line-height:1.25}
+.cert.lang{border-left-color:var(--trace)}
+.cert p{color:var(--muted); font-size:.88rem}
+.reach{display:grid; gap:8px; margin-top:20px; font-family:var(--mono); font-size:.85rem}
+.reach a{text-decoration:none; border-bottom:1px solid color-mix(in srgb,var(--paper) 35%, transparent)}
+.reach a:hover{color:var(--trace)}
+/* contact */
+.contact{background:var(--ink); color:var(--paper); border-radius:24px; padding:44px clamp(24px,5vw,56px); display:grid; grid-template-columns:1.3fr 1fr; gap:32px; align-items:center; position:relative; overflow:hidden}
+.contact h2{font-size:clamp(1.8rem,4vw,2.8rem); font-weight:800}
+.contact p{opacity:.8; margin-top:12px; max-width:52ch}
+.contact .btn{border-color:var(--paper); color:var(--paper)}
+.contact .btn.primary{background:var(--trace); border-color:var(--trace); color:#fff}
+.contact canvas{position:absolute; inset:auto 0 0 0; width:100%; height:70px; opacity:.5; pointer-events:none}
+@media (max-width:760px){ .contact{grid-template-columns:1fr} }
+footer{padding:28px 0 48px; text-align:center}
+
+/* svg animation helpers */
+.tr{stroke:var(--trace)} .tl-c{stroke:var(--teal)} .ink{stroke:var(--ink)} .mut{stroke:var(--muted)}
+.f-tr{fill:var(--trace)} .f-tl{fill:var(--teal)} .f-ink{fill:var(--ink)} .f-card{fill:var(--card)} .f-mut{fill:var(--muted)}
+.svgtxt{font-family:var(--mono); font-size:10px; fill:var(--muted)}
+.bar{transform-box:fill-box; transform-origin:bottom; animation:bar 1.8s ease-in-out infinite alternate}
+@keyframes bar{from{transform:scaleY(.25)}to{transform:scaleY(1)}}
+.ping{transform-box:fill-box; transform-origin:center; animation:ping 2.2s ease-out infinite}
+@keyframes ping{from{transform:scale(.3); opacity:.9}to{transform:scale(1.6); opacity:0}}
+.tick{stroke-dasharray:20; stroke-dashoffset:20; animation:tick 6s ease infinite}
+@keyframes tick{0%,8%{stroke-dashoffset:20}18%,88%{stroke-dashoffset:0}100%{stroke-dashoffset:20}}
+.doc{animation:doc 6s ease infinite}
+@keyframes doc{0%,62%{transform:translateX(30px); opacity:0}72%,90%{transform:none; opacity:1}100%{opacity:0}}
+.bub{transform-box:fill-box; transform-origin:left bottom; animation:bub 5s ease infinite}
+@keyframes bub{0%,8%{transform:scale(0)}16%,88%{transform:scale(1)}100%{transform:scale(0)}}
+.wave{animation:wave 3s linear infinite}
+@keyframes wave{to{transform:translateX(-60px)}}
+.blink{animation:blink 1.6s steps(2) infinite}
+@keyframes blink{50%{opacity:.25}}
+.paused *{animation-play-state:paused !important}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation:none !important; transition:none !important; scroll-behavior:auto !important}
+  .tick{stroke-dashoffset:0} .doc,.bub{opacity:1; transform:none}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Venithraa Ganesan, back to top">
+      <svg viewBox="0 0 34 18" aria-hidden="true"><path d="M0 10h8l2-4 3 10 4-16 3 12 2-2h12" fill="none" class="tr" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg>
+      Venithraa Ganesan
+    </a>
+    <ul>
+      <li><a href="#services">For hospitals</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#journey">Journey</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="hero-top">
+      <span class="mono">JAVA &amp; PYTHON · FULL STACK · DATA ENGINEERING / HEALTHCARE FREELANCE</span>
+      <span class="mono">25 mm/s · 10 mm/mV</span>
+    </div>
+    <div class="monitor" aria-hidden="true">
+      <canvas id="heroTrace"></canvas>
+      <div class="readout"><b id="bpm">72</b><span class="mono">LEAD II</span></div>
+    </div>
+    <h1><span>Venithraa</span> <span>Ganesan</span></h1>
+    <p class="lede">Java &amp; Python developer, building software since 2019 and enterprise backends today. I work across <em>Spring Boot microservices and APIs, data pipelines, sensor and EEG data, connected devices and the web and mobile apps</em> that put it all in front of clinicians and patients. Based in Chennai and taking freelance software work for hospitals and health-tech teams.</p>
+    <div class="cta">
+      <a class="btn primary" href="#projects">See the projects
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></a>
+      <a class="btn" href="#contact">Contact me</a>
+      <a class="btn" href="https://github.com/venithraa">GitHub</a>
+    </div>
+    <div class="facts">
+      <div><span class="mono">NOW</span><b>Java &amp; Python Developer, Promon</b></div>
+      <div><span class="mono">INDUSTRY</span><b>Promon · Orange · Lam Research</b></div>
+      <div><span class="mono">EDUCATION</span><b>MSc IoT, EURECOM · PG Data Science &amp; AI, IIIT Bangalore</b></div>
+      <div><span class="mono">RESEARCH</span><b>2 published papers on signal analysis</b></div>
+      <div><span class="mono">LANGUAGES</span><b>Tamil · English · Hindi · Telugu</b></div>
+    </div>
+  </div>
+</header>
+
+<main>
+<section id="services">
+  <div class="wrap">
+    <div class="head"><h2>What I can build for your hospital</h2><span class="mono">EACH SERVICE BACKED BY WORK BELOW</span></div>
+    <div class="services">
+      <article class="svc">
+        <svg viewBox="0 0 40 40" aria-hidden="true"><rect x="4" y="6" width="12" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="24" y="6" width="12" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="14" y="26" width="12" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 16v5h20v-5M20 21v5" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        <h3>Hospital backends &amp; integrations</h3>
+        <p>Reliable Java Spring Boot and Python services with REST and SOAP APIs that connect your HIS, lab, billing and pharmacy systems instead of re-typing data between them.</p>
+        <span class="proof">PROOF: Promon microservices · Orange ingestion APIs</span>
+      </article>
+      <article class="svc">
+        <svg viewBox="0 0 40 40" aria-hidden="true"><rect x="5" y="8" width="30" height="22" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 24l5-6 4 3 6-8 5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M14 34h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <h3>Clinical data dashboards</h3>
+        <p>Turn admissions, lab and department data into pipelines, dashboards and reports staff actually use. Built with Python, SQL, PostgreSQL and PySpark, with analysis that holds up.</p>
+        <span class="proof">PROOF: Promon SQL work · Deloitte analytics simulation · EEG analysis</span>
+      </article>
+      <article class="svc">
+        <svg viewBox="0 0 40 40" aria-hidden="true"><rect x="11" y="4" width="18" height="32" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M17 31h6M15 12h10M15 17h7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <h3>Patient &amp; staff apps</h3>
+        <p>Appointment booking, intake forms, patient education and internal tools as web or Android apps, from first screen to deployed backend.</p>
+        <span class="proof">PROOF: React/Node freelance apps · Android · Vue + Laravel</span>
+      </article>
+      <article class="svc">
+        <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M11 11a13 13 0 000 18M29 11a13 13 0 010 18M6 6a20 20 0 000 28M34 6a20 20 0 010 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <h3>Device &amp; sensor integration</h3>
+        <p>Connect monitors, sensors and test rigs to software: data capture, automated checks and generated reports, on Raspberry Pi, Arduino or a desktop GUI.</p>
+        <span class="proof">PROOF: Lam Research GUI · Smart Stick · TinyML</span>
+      </article>
+      <article class="svc">
+        <svg viewBox="0 0 40 40" aria-hidden="true"><rect x="9" y="18" width="22" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M14 18v-5a6 6 0 0112 0v5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="20" cy="26" r="2.5" fill="currentColor"/></svg>
+        <h3>Privacy-first machine learning</h3>
+        <p>Models that learn from patient data without moving it off the device or out of the hospital, using federated learning and on-device inference.</p>
+        <span class="proof">PROOF: Federated learning at Orange</span>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="wrap">
+    <div class="head"><h2>Projects</h2><span class="mono">2019 → 2026 · NEWEST FIRST</span></div>
+    <div class="filters" role="group" aria-label="Filter projects">
+      <button type="button" id="f-all" data-f="all" aria-pressed="true">All</button>
+      <button type="button" id="f-backend" data-f="backend" aria-pressed="false">Backend &amp; data</button>
+      <button type="button" id="f-health" data-f="health" aria-pressed="false">Health &amp; signals</button>
+      <button type="button" id="f-apps" data-f="apps" aria-pressed="false">Apps</button>
+      <button type="button" id="f-iot" data-f="iot" aria-pressed="false">IoT &amp; edge</button>
+      <button type="button" id="f-ml" data-f="ml" aria-pressed="false">ML &amp; networks</button>
+    </div>
+
+    <div class="projects">
+
+      <!-- Promon -->
+      <article class="proj" data-cat="backend">
+        <div class="viz">
+          <span class="tag mono">GATEWAY → SERVICES → POSTGRESQL</span>
+          <svg viewBox="0 0 300 200" role="img" aria-label="API requests routed through a gateway to microservices and a PostgreSQL database">
+            <path id="m0" d="M20 100 H92" fill="none" class="mut" stroke-width="2" stroke-dasharray="4 4"/>
+            <path id="m1" d="M120 100 Q150 50 182 50" fill="none" class="mut" stroke-width="1.5"/>
+            <path id="m2" d="M120 100 H182" fill="none" class="mut" stroke-width="1.5"/>
+            <path id="m3" d="M120 100 Q150 150 182 150" fill="none" class="mut" stroke-width="1.5"/>
+            <path id="m4" d="M228 50 Q258 70 258 92" fill="none" class="mut" stroke-width="1.5"/>
+            <path id="m5" d="M228 150 Q258 130 258 112" fill="none" class="mut" stroke-width="1.5"/>
+            <rect x="92" y="80" width="32" height="40" rx="7" class="f-ink"/>
+            <text x="108" y="104" text-anchor="middle" style="font:600 9px var(--mono); fill:var(--paper)">API</text>
+            <rect x="182" y="34" width="46" height="32" rx="6" class="f-card tl-c" stroke-width="2"/>
+            <rect x="182" y="84" width="46" height="32" rx="6" class="f-card tl-c" stroke-width="2"/>
+            <rect x="182" y="134" width="46" height="32" rx="6" class="f-card tl-c" stroke-width="2"/>
+            <text x="205" y="54" text-anchor="middle" class="svgtxt">product</text>
+            <text x="205" y="104" text-anchor="middle" class="svgtxt">registr.</text>
+            <text x="205" y="154" text-anchor="middle" class="svgtxt">billing</text>
+            <g transform="translate(244 88)"><ellipse cx="14" cy="4" rx="14" ry="5" class="f-card tr" stroke-width="2"/><path d="M0 4v20a14 5 0 0028 0V4" class="f-card tr" stroke-width="2"/><ellipse cx="14" cy="4" rx="14" ry="5" fill="none" class="tr" stroke-width="2"/></g>
+            <text x="258" y="130" text-anchor="middle" class="svgtxt">PostgreSQL</text>
+            <circle r="4" class="f-tr"><animateMotion dur="1.4s" repeatCount="indefinite"><mpath href="#m0"/></animateMotion></circle>
+            <circle r="4" class="f-tr"><animateMotion dur="1.4s" begin=".45s" repeatCount="indefinite"><mpath href="#m0"/></animateMotion></circle>
+            <circle r="3.5" class="f-tl"><animateMotion dur="1.6s" repeatCount="indefinite"><mpath href="#m1"/></animateMotion></circle>
+            <circle r="3.5" class="f-tl"><animateMotion dur="1.6s" begin=".5s" repeatCount="indefinite"><mpath href="#m2"/></animateMotion></circle>
+            <circle r="3.5" class="f-tl"><animateMotion dur="1.6s" begin="1s" repeatCount="indefinite"><mpath href="#m3"/></animateMotion></circle>
+            <circle r="3" class="f-tr"><animateMotion dur="1.2s" begin=".3s" repeatCount="indefinite"><mpath href="#m4"/></animateMotion></circle>
+            <circle r="3" class="f-tr"><animateMotion dur="1.2s" begin=".9s" repeatCount="indefinite"><mpath href="#m5"/></animateMotion></circle>
+            <text x="20" y="90" class="svgtxt">requests</text>
+          </svg>
+        </div>
+        <div class="body">
+          <div class="meta"><span class="pill">FEB 2026 – PRESENT</span><span class="pill">PROMON · CHENNAI</span></div>
+          <h3>Microservices for telecom OSS/BSS platforms</h3>
+          <p>As a Junior Java &amp; Python Developer, I build and maintain Spring Boot and Python microservices for telecom OSS/BSS applications. I design and optimise REST APIs for product and registration services, write PostgreSQL queries to analyse data and fix production issues, and have sped up APIs through code optimisation, more efficient database access and concurrent processing.</p>
+          <p class="rel"><b>For hospitals:</b> patient registration, service catalogues and billing follow the same pattern. I can build the APIs that link your HIS, lab and pharmacy systems and keep them fast under load.</p>
+          <div class="stack"><span>Java</span><span>Spring Boot</span><span>Python</span><span>REST</span><span>SOAP</span><span>PostgreSQL</span><span>Kubernetes</span><span>Azure</span><span>Postman</span></div>
+        </div>
+      </article>
+
+      <!-- Freelance full-stack -->
+      <article class="proj" data-cat="apps backend">
+        <div class="viz">
+          <span class="tag mono">CHAT · SESSIONS</span>
+          <svg viewBox="0 0 300 200" role="img" aria-label="Two phone screens with chat bubbles appearing">
+            <rect x="50" y="20" width="86" height="164" rx="14" class="f-card ink" stroke-width="2"/>
+            <rect x="164" y="20" width="86" height="164" rx="14" class="f-card ink" stroke-width="2"/>
+            <text x="93" y="42" text-anchor="middle" class="svgtxt">lingo-circle</text>
+            <text x="207" y="42" text-anchor="middle" class="svgtxt">ibitibi</text>
+            <g class="bub"><rect x="60" y="56" width="58" height="18" rx="9" class="f-tl"/></g>
+            <g class="bub" style="animation-delay:.5s"><rect x="74" y="82" width="52" height="18" rx="9" class="f-tr"/></g>
+            <g class="bub" style="animation-delay:1s"><rect x="60" y="108" width="44" height="18" rx="9" class="f-tl"/></g>
+            <g class="bub" style="animation-delay:.3s"><rect x="174" y="60" width="66" height="34" rx="8" fill="none" class="tl-c" stroke-width="2"/><circle cx="188" cy="77" r="7" class="f-tl"/><path d="M200 72h30M200 82h20" class="mut" stroke-width="3" stroke-linecap="round"/></g>
+            <g class="bub" style="animation-delay:.9s"><rect x="174" y="104" width="66" height="22" rx="11" class="f-tr"/><text x="207" y="119" text-anchor="middle" style="font:600 10px var(--body); fill:#fff">Book coach</text></g>
+          </svg>
+        </div>
+        <div class="body">
+          <div class="meta"><span class="pill">MAR – JUN 2024</span><span class="pill">FREELANCE · REMOTE</span></div>
+          <h3>Learning apps for children: lingo-circle &amp; ibitibi</h3>
+          <p>Led full-stack development of two cloud-based educational apps for kids. lingo-circle helps children learn languages; ibitibi connects them with life coaches. I built the React.js and Node.js front ends and the backend logic and APIs in Java and Python with SQL data handling, worked in Agile sprints with a cross-functional team, and set up its remote-collaboration workflow.</p>
+          <p class="rel"><b>For hospitals:</b> the same pattern of booking a session with an expert and guided content fits teleconsultation, patient education and counselling apps.</p>
+          <div class="stack"><span>React.js</span><span>Node.js</span><span>Java</span><span>Python</span><span>SQL</span><span>Agile</span></div>
+        </div>
+      </article>
+
+      <!-- Contact form -->
+      <article class="proj" data-cat="apps">
+        <div class="viz">
+          <span class="tag mono">FORM → API → DB</span>
+          <svg viewBox="0 0 300 200" role="img" aria-label="A web form sending data to a backend server">
+            <rect x="24" y="34" width="110" height="132" rx="10" class="f-card ink" stroke-width="2"/>
+            <path d="M38 58h56M38 90h56M38 122h40" class="mut" stroke-width="2" stroke-linecap="round"/>
+            <rect x="38" y="64" width="82" height="14" rx="3" fill="none" class="mut" stroke-width="1.5"/>
+            <rect x="38" y="96" width="82" height="14" rx="3" fill="none" class="mut" stroke-width="1.5"/>
+            <rect x="38" y="138" width="50" height="16" rx="8" class="f-tr"/>
+            <path d="M134 100 H206" class="mut" stroke-width="2" stroke-dasharray="4 4"/>
+            <circle r="5" class="f-tr"><animateMotion dur="1.8s" repeatCount="indefinite" path="M134 100 H206"/></circle>
+            <rect x="206" y="62" width="70" height="76" rx="8" class="f-card tl-c" stroke-width="2"/>
+            <path d="M218 82h46M218 100h46M218 118h46" class="tl-c" stroke-width="2"/>
+            <circle cx="268" cy="70" r="3" class="f-tl blink"/>
+            <text x="79" y="28" text-anchor="middle" class="svgtxt">Vue.js</text>
+            <text x="241" y="56" text-anchor="middle" class="svgtxt">Laravel · PHP</text>
+          </svg>
+        </div>
+        <div class="body">
+          <div class="meta"><span class="pill">SEP – OCT 2023</span><span class="pill">PERSONAL PROJECT</span></div>
+          <h3>Contact form web application</h3>
+          <p>A complete form system with a Vue.js frontend and a Laravel/PHP backend that captures, validates and stores submissions.</p>
+          <p class="rel"><b>For hospitals:</b> the foundation for online patient registration, feedback and enquiry forms that land straight in your records.</p>
+          <div class="stack"><span>Vue.js</span><span>Laravel</span><span>PHP</span></div>
+        </div>
+      </article>
+
+      <!-- Federated learning -->
+      <article class="proj" data-cat="ml health backend">
+        <div class="viz">
+          <span class="tag mono">MODEL UPDATES ONLY</span>
+          <svg viewBox="0 0 300 200" role="img" aria-label="Three phones sending model updates, not data, to a central server">
+            <rect x="120" y="18" width="60" height="42" rx="8" class="f-card ink" stroke-width="2"/>
+            <path d="M132 32h36M132 44h24" class="tl-c" stroke-width="2.5" stroke-linecap="round"/>
+            <text x="150" y="74" text-anchor="middle" class="svgtxt">global model</text>
+            <g id="phones">
+              <rect x="34" y="128" width="34" height="56" rx="6" class="f-card ink" stroke-width="2"/>
+              <rect x="133" y="128" width="34" height="56" rx="6" class="f-card ink" stroke-width="2"/>
+              <rect x="232" y="128" width="34" height="56" rx="6" class="f-card ink" stroke-width="2"/>
+            </g>
+            <g class="f-tl">
+              <path d="M45 150h12v10H45zM47 150v-3a4 4 0 018 0v3" fill="none" class="tl-c" stroke-width="2"/>
+              <path d="M144 150h12v10h-12zM146 150v-3a4 4 0 018 0v3" fill="none" class="tl-c" stroke-width="2"/>
+              <path d="M243 150h12v10h-12zM245 150v-3a4 4 0 018 0v3" fill="none" class="tl-c" stroke-width="2"/>
+            </g>
+            <path id="p1" d="M51 128 Q70 80 132 60" fill="none" class="mut" stroke-width="1.5" stroke-dasharray="3 4"/>
+            <path id="p2" d="M150 128 V60" fill="none" class="mut" stroke-width="1.5" stroke-dasharray="3 4"/>
+            <path id="p3" d="M249 128 Q230 80 168 60" fill="none" class="mut" stroke-width="1.5" stroke-dasharray="3 4"/>
+            <circle r="4.5" class="f-tr"><animateMotion dur="2.4s" repeatCount="indefinite"><mpath href="#p1"/></animateMotion></circle>
+            <circle r="4.5" class="f-tr"><animateMotion dur="2.4s" begin=".6s" repeatCount="indefinite"><mpath href="#p2"/></animateMotion></circle>
+            <circle r="4.5" class="f-tr"><animateMotion dur="2.4s" begin="1.2s" repeatCount="indefinite"><mpath href="#p3"/></animateMotion></circle>
+            <text x="150" y="198" text-anchor="middle" class="svgtxt">raw data stays on each device</text>
+          </svg>
+        </div>
+        <div class="body">
+          <div class="meta"><span class="pill">APR – SEP 2023</span><span class="pill">ORANGE · BIOT, FRANCE</span></div>
+          <h3>Federated learning &amp; real-time data ingestion</h3>
+          <p>As an Embedded AI intern at Orange, I implemented federated learning in Android apps: phones train a shared model locally and send back only model updates, so personal data never leaves the device. I also built network data collection on Raspberry Pi and Docker, designed real-time REST APIs for data ingestion, and supported deploying TensorFlow and scikit-learn models.</p>
+          <p class="rel"><b>For hospitals:</b> train a model across branches or departments without pooling patient records in one place, which keeps you safer on data-privacy rules.</p>
+          <div class="stack"><span>Android (Kotlin)</span><span>Python</span><span>Raspberry Pi</span><span>Docker</span><span>REST APIs</span><span>TensorFlow</span><span>scikit-learn</span></div>
+        </div>
+      </article>
+
+      <!-- 5G -->
+      <article class="proj" data-cat="ml">
+        <div class="viz">
+          <span class="tag mono">UE → gNB → FlexRIC → xApp</span>
+          <svg viewBox="0 0 300 200" role="img" aria-label="Network diagram of a phone, base station, controller and an xApp sending control actions">
+            <path id="n1" d="M46 120 L118 120 L190 70 L262 120" fill="none" class="mut" stroke-width="2"/>
+            <path id="n2" d="M262 120 L190 70" fill="none" class="tr" stroke-width="2" stroke-dasharray="5 4"/>
+            <rect x="30" y="100" width="32" height="44" rx="6" class="f-card ink" stroke-width="2"/>
+            <path d="M118 90 v60 M106 104 l12 -14 12 14" class="ink" stroke-width="2" fill="none"/>
+            <rect x="162" y="48" width="56" height="44" rx="8" class="f-card tl-c" stroke-width="2"/>
+            <rect x="236" y="100" width="52" height="40" rx="8" class="f-card tr" stroke-width="2"/>
+            <circle r="4" class="f-tl"><animateMotion dur="2.6s" repeatCount="indefinite"><mpath href="#n1"/></animateMotion></circle>
+            <circle r="4" class="f-tr"><animateMotion dur="1.6s" begin="1.2s" repeatCount="indefinite"><mpath href="#n2"/></animateMotion></circle>
+            <text x="46" y="160" text-anchor="middle" class="svgtxt">UE</text>
+            <text x="118" y="166" text-anchor="middle" class="svgtxt">gNB</text>
+            <text x="190" y="40" text-anchor="middle" class="svgtxt">FlexRIC</text>
+            <text x="262" y="156" text-anchor="middle" class="svgtxt">xApp</text>
+          </svg>
+        </div>
+        <div class="body">
+          <div class="meta"><span class="pill">OCT 2022 – FEB 2023</span><span class="pill">EURECOM</span></div>
+          <h3>Intelligent 5G network applications</h3>
+          <p>Built xApps for the OpenAirInterface community on FlexRIC, an open-source near-real-time controller. They read network and user data, extract insight and turn it into control actions that improve performance.</p>
+          <p class="rel"><b>For hospitals:</b> monitoring and acting on live network data is the core of reliable connectivity for connected devices, telemetry and telemedicine.</p>
+          <div class="stack"><span>Python</span><span>SWIG</span><span>O-RAN</span><span>OpenAirInterface</span></div>
+        </div>
+      </article>
+
+      <!-- TinyML -->
+      <article class="proj" data-cat="iot ml">
+        <div class="viz">
+          <span class="tag mono">PC vs RASPBERRY PI 3</span>
+          <svg viewBox="0 0 300 200" role="img" aria-label="Comparison meters of a desktop and a Raspberry Pi running models">
+            <rect x="36" y="40" width="96" height="62" rx="6" class="f-card ink" stroke-width="2"/>
+            <path d="M68 116h32M84 102v14" class="ink" stroke-width="2"/>
+            <rect x="178" y="58" width="86" height="54" rx="6" class="f-card tl-c" stroke-width="2"/>
+            <circle cx="198" cy="76" r="5" class="f-tl"/><path d="M212 72h40M212 82h28" class="tl-c" stroke-width="2"/>
+            <text x="84" y="34" text-anchor="middle" class="svgtxt">desktop</text>
+            <text x="221" y="52" text-anchor="middle" class="svgtxt">edge device</text>
+            <g>
+              <text x="36" y="146" class="svgtxt">time</text>
+              <text x="36" y="176" class="svgtxt">CPU / mem</text>
+              <rect x="100" y="138" width="170" height="8" rx="4" class="f-card mut" stroke-width="1"/>
+              <rect x="100" y="168" width="170" height="8" rx="4" class="f-card mut" stroke-width="1"/>
+              <rect x="100" y="138" width="170" height="8" rx="4" class="f-tl bar" style="transform-origin:left; animation-name:barx"/>
+              <rect x="100" y="168" width="170" height="8" rx="4" class="f-tr bar" style="transform-origin:left; animation-name:barx; animation-delay:.6s"/>
+            </g>
+          </svg>
+        </div>
+        <div class="body">
+          <div class="meta"><span class="pill">MAR – JUN 2022</span><span class="pill">EURECOM</span></div>
+          <h3>Tiny machine learning on Raspberry Pi 3</h3>
+          <p>Compared running ML on a computer with running it on a Raspberry Pi 3 using TinyML. I ran several datasets through different models and measured time, CPU and memory to see what is practical at the edge.</p>
+          <p class="rel"><b>For hospitals:</b> low-cost bedside or ward devices that run alerts locally, with low latency and no dependence on the network.</p>
+          <div class="stack"><span>TensorFlow</span><span>TensorFlow Lite</span><span>Raspberry Pi</span></div>
+        </div>
+      </article>
+
+      <!-- E-commerce -->
+      <article class="proj" data-cat="apps">
+        <div class="viz">
+          <span class="tag mono">CUSTOMISE → SUGGEST → CART</span>
+          <svg viewBox="0 0 300 200" role="img" aria-label="An Android shopping app with product customisation">
+            <rect x="104" y="14" width="92" height="174" rx="14" class="f-card ink" stroke-width="2"/>
+            <circle cx="150" cy="62" r="22" fill="none" class="tl-c" stroke-width="2"/>
+            <circle cx="150" cy="62" r="10" class="f-tl ping"/>
+            <rect x="118" y="98" width="64" height="10" rx="5" class="f-card mut" stroke-width="1"/>
+            <rect x="118" y="98" width="64" height="10" rx="5" class="f-tl bar" style="transform-origin:left; animation-name:barx"/>
+            <rect x="118" y="116" width="64" height="10" rx="5" class="f-card mut" stroke-width="1"/>
+            <rect x="118" y="116" width="64" height="10" rx="5" class="f-tr bar" style="transform-origin:left; animation-name:barx; animation-delay:.7s"/>
+            <rect x="118" y="152" width="64" height="20" rx="10" class="f-tr"/>
+            <text x="150" y="166" text-anchor="middle" style="font:600 10px var(--body); fill:#fff">Add to cart</text>
+            <text x="150" y="144" text-anchor="middle" class="svgtxt">oil suggestion</text>
+          </svg>
+        </div>
+        <div class="body">
+          <div class="meta"><span class="pill">OCT 2021 – FEB 2022</span><span class="pill">EURECOM</span></div>
+          <h3>E-commerce app for customisable beauty products</h3>
+          <p>An Android shopping app for homemade, cruelty-free bath products. Users customise each product to their preferences, and the app suggests essential oils that suit it.</p>
+          <p class="rel"><b>For hospitals:</b> the same catalogue, personalisation and checkout flow powers pharmacy ordering and health-package booking apps.</p>
+          <div class="stack"><span>Android Studio</span><span>Firebase</span></div>
+        </div>
+      </article>
+
+      <!-- EEG grasp lift -->
+      <article class="proj" data-cat="health ml">
+        <div class="viz">
+          <span class="tag mono">EEG · MOTOR CHANNELS</span>
+          <canvas data-viz="eeg" aria-label="Animated multichannel EEG trace with detected hand-movement labels" role="img"></canvas>
+        </div>
+        <div class="body">
+          <div class="meta"><span class="pill">OCT 2021 – JAN 2022</span><span class="pill">EURECOM</span></div>
+          <h3>Detecting grasp-and-lift movements from EEG</h3>
+          <p>Used machine learning to detect hand movements such as grasping, lifting and replacing an object from brain signals, which can be used to control robotic prosthetic arms. I compared three EEG pre-processing methods (Butterworth low-pass, wavelet denoising, stacked filters) and several classifiers. A weighted ensemble gave the best test accuracy.</p>
+          <p class="rel"><b>For hospitals:</b> experience with real biosignal pipelines, from filtering to classification, for rehab, neurology and prosthetics work.</p>
+          <div class="stack"><span>Python</span><span>Random Forest</span><span>LDA</span><span>PCA</span><span>Ensembles</span></div>
+        </div>
+      </article>
+
+      <!-- Kalman -->
+      <article class="proj" data-cat="ml">
+        <div class="viz">
+          <span class="tag mono">STATOR VOLTAGE · FAULT FLAGGED</span>
+          <canvas data-viz="kalman" aria-label="Animated three-phase waveform with a detected fault highlighted" role="img"></canvas>
+        </div>
+        <div class="body">
+          <div class="meta"><span class="pill">JUL 2020 – MAY 2021</span><span class="pill">AMRITA</span><span class="pill pub">PUBLISHED</span></div>
+          <h3>Fault diagnosis of synchronous generators with Kalman filters</h3>
+          <p>Simulated a synchronous generator with introduced faults in Ansys Maxwell, then used signal processing and Kalman filtering in MATLAB to find when, in which phase and how many stator inter-turn faults occurred. The method and results were published as a paper.</p>
+          <p class="rel"><b>For hospitals:</b> the same thinking applies to predictive maintenance on critical equipment such as generators, UPS units and imaging systems, catching faults before they cause downtime.</p>
+          <div class="stack"><span>MATLAB</span><span>ANSYS Maxwell</span><span>Kalman filter</span></div>
+        </div>
+      </article>
+
+      <!-- EEG emotion -->
+      <article class="proj" data-cat="health ml">
+        <div class="viz">
+          <span class="tag mono">SPECTRAL POWER BY BAND</span>
+          <svg viewBox="0 0 300 200" role="img" aria-label="EEG frequency band power bars feeding an emotion classifier">
+            <g transform="translate(30 30)">
+              <rect class="f-tl bar" x="0" y="20" width="26" height="110" rx="3"/>
+              <rect class="f-tl bar" style="animation-delay:.3s" x="36" y="20" width="26" height="110" rx="3"/>
+              <rect class="f-tr bar" style="animation-delay:.6s" x="72" y="20" width="26" height="110" rx="3"/>
+              <rect class="f-tl bar" style="animation-delay:.15s" x="108" y="20" width="26" height="110" rx="3"/>
+              <rect class="f-tl bar" style="animation-delay:.45s" x="144" y="20" width="26" height="110" rx="3"/>
+              <path d="M-4 131 H176" class="mut" stroke-width="1.5"/>
+              <text x="13" y="146" text-anchor="middle" class="svgtxt">δ</text>
+              <text x="49" y="146" text-anchor="middle" class="svgtxt">θ</text>
+              <text x="85" y="146" text-anchor="middle" class="svgtxt">α</text>
+              <text x="121" y="146" text-anchor="middle" class="svgtxt">β</text>
+              <text x="157" y="146" text-anchor="middle" class="svgtxt">γ</text>
+            </g>
+            <path d="M212 100 h16" class="mut" stroke-width="2"/><path d="M224 94l6 6-6 6" fill="none" class="mut" stroke-width="2"/>
+            <g font-family="IBM Plex Mono, monospace" font-size="10">
+              <rect x="234" y="56" width="56" height="18" rx="9" fill="none" class="mut"/><text x="262" y="68" text-anchor="middle" class="svgtxt">calm</text>
+              <rect x="234" y="80" width="56" height="18" rx="9" class="f-tr blink"/><text x="262" y="92" text-anchor="middle" style="font:500 10px var(--mono); fill:#fff">happy</text>
+              <rect x="234" y="104" width="56" height="18" rx="9" fill="none" class="mut"/><text x="262" y="116" text-anchor="middle" class="svgtxt">sad</text>
+              <rect x="234" y="128" width="56" height="18" rx="9" fill="none" class="mut"/><text x="262" y="140" text-anchor="middle" class="svgtxt">angry</text>
+            </g>
+          </svg>
+        </div>
+        <div class="body">
+          <div class="meta"><span class="pill">JAN – MAY 2020</span><span class="pill">AMRITA</span><span class="pill pub">PUBLISHED · ICRET 2020 / JARDCS</span></div>
+          <h3>Emotion recognition from EEG signals</h3>
+          <p>Analysed four distinct emotions by extracting spectral power features from raw EEG, then compared SVM, KNN, Random Forest and neural-network models in Python. The work was selected for the ICRET 2020 proceedings, published in the Journal of Advanced Research in Dynamical and Control Systems.</p>
+          <p class="rel"><b>For hospitals:</b> a basis for psychiatry and neurology research tools and for decision-support prototypes on EEG data.</p>
+          <div class="stack"><span>Python</span><span>SVM</span><span>KNN</span><span>Random Forest</span><span>Neural networks</span></div>
+        </div>
+      </article>
+
+      <!-- Smart stick -->
+      <article class="proj" data-cat="health iot">
+        <div class="viz">
+          <span class="tag mono">ULTRASONIC · GPS · GSM</span>
+          <svg viewBox="0 0 300 200" role="img" aria-label="A smart walking stick sensing an obstacle and sending its location by SMS">
+            <path d="M70 30 L96 176" class="ink" stroke-width="5" stroke-linecap="round"/>
+            <path d="M70 30 q-14 -4 -18 10" fill="none" class="ink" stroke-width="5" stroke-linecap="round"/>
+            <rect x="80" y="112" width="18" height="14" rx="3" class="f-tr"/>
+            <circle cx="104" cy="120" r="20" fill="none" class="tr ping" stroke-width="2"/>
+            <circle cx="104" cy="120" r="20" fill="none" class="tr ping" stroke-width="2" style="animation-delay:.7s"/>
+            <circle cx="104" cy="120" r="20" fill="none" class="tr ping" stroke-width="2" style="animation-delay:1.4s"/>
+            <rect x="140" y="104" width="22" height="72" rx="3" class="f-mut" opacity=".5"/>
+            <text x="151" y="98" text-anchor="middle" class="svgtxt">obstacle</text>
+            <rect x="214" y="44" width="58" height="104" rx="10" class="f-card ink" stroke-width="2"/>
+            <g class="bub"><rect x="220" y="62" width="44" height="16" rx="8" class="f-tl"/><text x="242" y="73" text-anchor="middle" style="font:500 8px var(--mono); fill:#fff">LOC?</text></g>
+            <g class="bub" style="animation-delay:1.2s"><rect x="222" y="86" width="44" height="34" rx="6" fill="none" class="tr" stroke-width="1.5"/><path d="M244 92a7 7 0 017 7c0 5-7 12-7 12s-7-7-7-12a7 7 0 017-7z" class="f-tr"/></g>
+            <path d="M180 60 q20 -20 30 -6" fill="none" class="mut" stroke-width="1.5" stroke-dasharray="3 3"/>
+          </svg>
+        </div>
+        <div class="body">
+          <div class="meta"><span class="pill">DEC 2019 – APR 2020</span><span class="pill">AMRITA</span></div>
+          <h3>Smart stick with GPS tracking</h3>
+          <p>A walking stick for visually impaired people. Ultrasonic sensors detect nearby obstacles, and GPS and GSM modules let family members get the user's live location by sending a simple SMS.</p>
+          <p class="rel"><b>For hospitals:</b> hands-on assistive-device and remote-tracking work, relevant to fall alerts, elderly care and patient-tracking systems.</p>
+          <div class="stack"><span>Arduino IDE</span><span>Ultrasonic sensors</span><span>GPS</span><span>GSM</span></div>
+        </div>
+      </article>
+
+      <!-- Lam research -->
+      <article class="proj" data-cat="iot apps">
+        <div class="viz">
+          <span class="tag mono">AUTOMATED TEST RUN · 2 HRS → 5 MIN</span>
+          <svg viewBox="0 0 300 200" role="img" aria-label="A test checklist ticking off items, then a report document appearing">
+            <rect x="26" y="26" width="160" height="150" rx="10" class="f-card ink" stroke-width="2"/>
+            <rect x="26" y="26" width="160" height="22" rx="10" class="f-tl"/>
+            <text x="38" y="41" style="font:500 9px var(--mono); fill:#fff">EtherCAT PCBA · test GUI</text>
+            <g>
+              <rect x="40" y="62" width="14" height="14" rx="3" fill="none" class="mut" stroke-width="1.5"/><path class="tick tl-c" d="M43 69l3 3 6-6" fill="none" stroke-width="2.4" stroke-linecap="round"/><path d="M64 69h100" class="mut" stroke-width="3" stroke-linecap="round" opacity=".5"/>
+              <rect x="40" y="88" width="14" height="14" rx="3" fill="none" class="mut" stroke-width="1.5"/><path class="tick tl-c" style="animation-delay:.5s" d="M43 95l3 3 6-6" fill="none" stroke-width="2.4" stroke-linecap="round"/><path d="M64 95h86" class="mut" stroke-width="3" stroke-linecap="round" opacity=".5"/>
+              <rect x="40" y="114" width="14" height="14" rx="3" fill="none" class="mut" stroke-width="1.5"/><path class="tick tl-c" style="animation-delay:1s" d="M43 121l3 3 6-6" fill="none" stroke-width="2.4" stroke-linecap="round"/><path d="M64 121h94" class="mut" stroke-width="3" stroke-linecap="round" opacity=".5"/>
+              <rect x="40" y="140" width="14" height="14" rx="3" fill="none" class="mut" stroke-width="1.5"/><path class="tick tl-c" style="animation-delay:1.5s" d="M43 147l3 3 6-6" fill="none" stroke-width="2.4" stroke-linecap="round"/><path d="M64 147h70" class="mut" stroke-width="3" stroke-linecap="round" opacity=".5"/>
+            </g>
+            <g class="doc">
+              <path d="M206 50h50l18 18v96h-68z" class="f-card tr" stroke-width="2"/>
+              <path d="M256 50v18h18" fill="none" class="tr" stroke-width="2"/>
+              <path d="M218 86h44M218 100h44M218 114h30" class="mut" stroke-width="2.5" stroke-linecap="round"/>
+              <text x="240" y="150" text-anchor="middle" class="svgtxt">report</text>
+            </g>
+          </svg>
+        </div>
+        <div class="body">
+          <div class="meta"><span class="pill">MAR – SEP 2021</span><span class="pill">LAM RESEARCH · BANGALORE</span></div>
+          <h3>GUI for automated PCBA testing</h3>
+          <p>As an Electrical Engineering intern, I built a Python front-end that automates testing of EtherCAT circuit-board assemblies and controllers, and generates detailed test reports from virtual simulations. The automation cut each validation run <strong>from 2 hours to 5 minutes</strong>.</p>
+          <p class="rel"><b>For hospitals:</b> automated QA checklists for biomedical equipment, with test logs and reports generated with no manual typing.</p>
+          <div class="stack"><span>Python</span><span>GUI development</span><span>Test automation</span></div>
+        </div>
+      </article>
+
+      <!-- Water -->
+      <article class="proj" data-cat="health">
+        <div class="viz">
+          <span class="tag mono">PRA + HUMAN-CENTRED DESIGN</span>
+          <svg viewBox="0 0 300 200" role="img" aria-label="A water droplet filling, surrounded by community members">
+            <defs><clipPath id="drop"><path d="M150 26 C150 26 104 88 104 120 a46 46 0 0092 0 C196 88 150 26 150 26z"/></clipPath></defs>
+            <path d="M150 26 C150 26 104 88 104 120 a46 46 0 0092 0 C196 88 150 26 150 26z" class="f-card tl-c" stroke-width="2.5"/>
+            <g clip-path="url(#drop)">
+              <path class="wave f-tl" opacity=".55" d="M90 120 q15 -10 30 0 t30 0 t30 0 t30 0 t30 0 t30 0 v80 h-180z"/>
+            </g>
+            <g class="f-mut" opacity=".75">
+              <circle cx="56" cy="90" r="8"/><path d="M44 120 a12 12 0 0124 0z"/>
+              <circle cx="244" cy="90" r="8"/><path d="M232 120 a12 12 0 0124 0z"/>
+              <circle cx="66" cy="152" r="8"/><path d="M54 182 a12 12 0 0124 0z"/>
+              <circle cx="234" cy="152" r="8"/><path d="M222 182 a12 12 0 0124 0z"/>
+            </g>
+          </svg>
+        </div>
+        <div class="body">
+          <div class="meta"><span class="pill">JUL 2019 – AUG 2020</span><span class="pill">AMRITA LIVE-IN-LABS® · RAJASTHAN</span><span class="pill pub">CO-AUTHOR</span></div>
+          <h3>Safe drinking water for a rural village</h3>
+          <p>As research assistant and co-author, I worked on a multidisciplinary study to improve drinking-water quality in Shyamoli, Rajasthan, with low-cost, sustainable purification. We used Participatory Rural Appraisal and human-centred design to understand the community's needs and co-design solutions with them.</p>
+          <p class="rel"><b>For hospitals:</b> I design with the people who will use the system. I talk to nurses, front desk and doctors before writing code.</p>
+          <div class="stack"><span>Field research</span><span>Human-centred design</span><span>PRA</span></div>
+        </div>
+      </article>
+
+    </div>
+
+    <div class="more">
+      <div><b>IIT Kanpur · AI &amp; IoT internship</b><p>Apr – Jun 2020. Built ML models for a mobile-controlled IoT robot, implemented predictive control with TensorFlow and Keras, and improved the IoT data-processing workflow.</p></div>
+      <div><b>IIIT Bangalore · Data Science &amp; AI</b><p>Dec 2024 – Aug 2025. Analytical problem solving, Excel analysis, Python data structures and libraries.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="journey">
+  <div class="wrap">
+    <div class="head"><h2>Journey</h2><span class="mono">● WORK &nbsp; ○ EDUCATION</span></div>
+    <div class="timeline">
+      <div class="tl"><span class="when">2026 –</span><div><h3>Junior Java &amp; Python Developer</h3><span class="org">Promon · Chennai</span><p>Spring Boot and Python microservices, REST APIs and PostgreSQL for telecom OSS/BSS.</p></div></div>
+      <div class="tl edu"><span class="when">2024 – 25</span><div><h3>Executive PG Certificate, Data Science &amp; AI</h3><span class="org">IIIT Bangalore</span></div></div>
+      <div class="tl"><span class="when">2024</span><div><h3>Junior Full-stack Developer</h3><span class="org">Freelance · Paris (remote)</span><p>Cloud-based learning apps lingo-circle and ibitibi: React.js, Node.js, Java and Python.</p></div></div>
+      <div class="tl"><span class="when">2023</span><div><h3>Embedded AI Engineer Intern</h3><span class="org">Orange · Biot, France</span><p>Federated learning on Android, Raspberry Pi data collection and real-time ingestion APIs.</p></div></div>
+      <div class="tl edu"><span class="when">2021 – 23</span><div><h3>MSc, Internet of Things</h3><span class="org">EURECOM, France</span></div></div>
+      <div class="tl"><span class="when">2021</span><div><h3>Electrical Engineering Intern</h3><span class="org">Lam Research · Bangalore</span><p>Python GUI that automated EtherCAT PCB validation and cut testing from 2 hours to 5 minutes.</p></div></div>
+      <div class="tl"><span class="when">2020</span><div><h3>AI &amp; IoT Intern</h3><span class="org">IIT Kanpur</span></div></div>
+      <div class="tl"><span class="when">2019 – 20</span><div><h3>Research Assistant &amp; Co-author</h3><span class="org">Amrita Live-in-Labs® · Rajasthan</span></div></div>
+      <div class="tl edu"><span class="when">2017 – 21</span><div><h3>B.Tech, Electronics &amp; Instrumentation</h3><span class="org">Amrita Vishwa Vidyapeetham, Coimbatore</span><p>Grade 8.91 / 10.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="wrap">
+    <div class="head"><h2>Toolkit</h2><span class="mono">USED IN PRODUCTION &amp; PROJECTS</span></div>
+    <div class="skills">
+      <div class="sk"><h3>Languages</h3><ul><li>Java</li><li>Python</li><li>Kotlin</li><li>JavaScript</li><li>SQL</li><li>PHP</li><li>MATLAB</li></ul></div>
+      <div class="sk"><h3>Backend &amp; web</h3><ul><li>Spring Boot</li><li>REST APIs</li><li>SOAP</li><li>Microservices</li><li>Django</li><li>Node.js</li><li>React</li><li>Vue.js</li><li>Laravel</li><li>HTML &amp; CSS</li></ul></div>
+      <div class="sk"><h3>Databases</h3><ul><li>PostgreSQL</li><li>MongoDB</li><li>Firebase</li><li>SQL</li></ul></div>
+      <div class="sk"><h3>Data engineering</h3><ul><li>PySpark</li><li>Databricks</li><li>Hadoop</li><li>ETL / ELT pipelines</li><li>Data modeling</li><li>Pandas</li><li>NumPy</li></ul></div>
+      <div class="sk"><h3>AI &amp; machine learning</h3><ul><li>TensorFlow</li><li>PyTorch</li><li>Keras</li><li>scikit-learn</li><li>TensorFlow Lite</li><li>Federated learning</li><li>Signal processing</li></ul></div>
+      <div class="sk"><h3>Cloud, DevOps &amp; devices</h3><ul><li>Azure</li><li>AWS</li><li>Docker</li><li>Kubernetes</li><li>CI/CD</li><li>GitHub</li><li>GitLab</li><li>Maven</li><li>Android Studio</li><li>Raspberry Pi</li><li>Arduino</li><li>EtherCAT</li></ul></div>
+    </div>
+    <div class="head" style="margin-top:48px"><h2>Certifications &amp; languages</h2><span class="mono">VERIFIED LEARNING</span></div>
+    <div class="certs">
+      <div class="cert"><span class="mono">IIIT BANGALORE</span><b>Postgraduate Certification in Data Science &amp; AI</b></div>
+      <div class="cert"><span class="mono">SALESFORCE</span><b>Salesforce Certified AI Associate</b></div>
+      <div class="cert"><span class="mono">DELOITTE AUSTRALIA</span><b>Data Analytics Job Simulation</b></div>
+      <div class="cert"><span class="mono">IIIT BANGALORE</span><b>DS &amp; AI Python Preparatory Course</b></div>
+      <div class="cert lang"><span class="mono">SPEAKS</span><b>Tamil (native) · English · Hindi · Telugu</b><p>So I can talk directly with doctors, nurses and admin staff across South India.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="wrap">
+    <div class="contact">
+      <div>
+        <h2>Have a hospital workflow that runs on paper or spreadsheets?</h2>
+        <p>Tell me what slows your team down. I'll suggest a small first version you can try within weeks, then build it out with you. Based in Chennai, so I can visit on site, and happy to work remotely.</p>
+        <div class="reach">
+          <span>EMAIL &nbsp;<a href="mailto:venithraaganesan@gmail.com">venithraaganesan@gmail.com</a></span>
+          <span>PHONE &nbsp;<a href="tel:+916281339264">+91 62813 39264</a></span>
+          <span>GITHUB &nbsp;<a href="https://github.com/venithraa">github.com/venithraa</a></span>
+        </div>
+      </div>
+      <div class="cta" style="margin:0">
+        <a class="btn primary" href="mailto:venithraaganesan@gmail.com">Email me</a>
+        <a class="btn" href="https://www.linkedin.com/in/venithraa-ganesan/">LinkedIn</a>
+        <a class="btn" href="https://github.com/venithraa">GitHub</a>
+      </div>
+      <canvas data-viz="flat" aria-hidden="true"></canvas>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="wrap"><span class="mono">VENITHRAA GANESAN · SHE/HER · CHENNAI, INDIA · PORTFOLIO 2026</span></footer>
+
+<style>@keyframes barx{from{transform:scaleX(.2)}to{transform:scaleX(1)}}</style>
+<script>
+(function(){
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+  function fit(c){
+    const r = c.getBoundingClientRect(), d = window.devicePixelRatio || 1;
+    c.width = Math.max(1, r.width * d); c.height = Math.max(1, r.height * d);
+    const x = c.getContext('2d'); x.setTransform(d,0,0,d,0,0); return {x, w:r.width, h:r.height};
+  }
+
+  // ECG beat shape, t in [0,1)
+  function ecg(t){
+    const g = (m,s,a)=> a*Math.exp(-((t-m)**2)/(2*s*s));
+    return g(.18,.025,.12) - g(.36,.008,.12) + g(.40,.012,1) - g(.44,.010,.25) + g(.66,.045,.22);
+  }
+
+  // Hero monitor: sweep trace with erase gap
+  const hero = document.getElementById('heroTrace');
+  let H = fit(hero), sweep = 0, beatLen = 220;
+  const pts = [];
+  function drawHero(){
+    const {x,w,h} = H; const mid = h*0.62, amp = h*0.52;
+    if(pts.length !== Math.ceil(w)) { pts.length = Math.ceil(w); for(let i=0;i<pts.length;i++) pts[i] = mid - ecg((i%beatLen)/beatLen)*amp; }
+    x.clearRect(0,0,w,h);
+    x.lineWidth = 2.2; x.lineJoin = 'round'; x.strokeStyle = css('--trace');
+    const gap = 26;
+    x.beginPath();
+    let pen = false;
+    for(let i=0;i<pts.length;i++){
+      const ahead = (i - sweep + pts.length) % pts.length;
+      if(!reduce && ahead > 0 && ahead < gap){ pen = false; continue; }
+      if(!pen){ x.moveTo(i, pts[i]); pen = true; } else x.lineTo(i, pts[i]);
+    }
+    x.stroke();
+    if(!reduce){
+      x.fillStyle = css('--trace'); x.beginPath(); x.arc(sweep, pts[Math.floor(sweep)] || mid, 3.5, 0, Math.PI*2); x.fill();
+    }
+  }
+
+  // Small canvases
+  const cans = [...document.querySelectorAll('canvas[data-viz]')].map(c=>({c, kind:c.dataset.viz, s:fit(c)}));
+  const labels = ['GRASP','LIFT','REPLACE','REST'];
+  function noise(i, k){ return Math.sin(i*0.11+k)*0.5 + Math.sin(i*0.37+k*2)*0.3 + Math.sin(i*0.9+k*5)*0.2; }
+
+  function drawSmall(o, t){
+    const {x,w,h} = o.s; x.clearRect(0,0,w,h);
+    if(o.kind === 'eeg'){
+      const ch = 4, top = 34, band = (h-top-20)/ch;
+      const phase = Math.floor(t/1800) % labels.length;
+      for(let k=0;k<ch;k++){
+        x.strokeStyle = k===2 ? css('--trace') : css('--teal'); x.lineWidth = 1.5; x.beginPath();
+        for(let i=0;i<w;i++){
+          const burst = (phase===0||phase===1) && i > w*0.45 && i < w*0.75 ? 1.8 : 1;
+          const y = top + band*k + band/2 + noise(i + t*0.06, k*1.7) * band*0.32 * burst;
+          i? x.lineTo(i,y) : x.moveTo(i,y);
+        }
+        x.stroke();
+        x.fillStyle = css('--muted'); x.font = '10px IBM Plex Mono, monospace';
+        x.fillText(['Fp1','C3','Cz','C4'][k], 6, top + band*k + 12);
+      }
+      x.fillStyle = css('--trace'); x.fillRect(w*0.45, top-6, w*0.30, 2);
+      x.font = '600 12px IBM Plex Mono, monospace'; x.textAlign = 'right';
+      x.fillText('▸ ' + labels[phase], w-10, 20); x.textAlign = 'left';
+    } else if(o.kind === 'kalman'){
+      const mid = h/2+6, amp = h*0.26, cols = ['--teal','--trace','--muted'];
+      const fx = ((t*0.05) % (w+120)) - 60;
+      x.fillStyle = 'rgba(194,47,58,.10)'; x.fillRect(fx-30, 26, 60, h-40);
+      for(let p=0;p<3;p++){
+        x.strokeStyle = css(cols[p]); x.lineWidth = 1.8; x.beginPath();
+        for(let i=0;i<w;i++){
+          const near = Math.abs(i - fx) < 30;
+          const a = near && p===1 ? amp*0.55 : amp;
+          const y = mid + Math.sin(i*0.045 + p*2.094 - t*0.003) * a + (near && p===1 ? Math.sin(i*0.6)*4 : 0);
+          i? x.lineTo(i,y) : x.moveTo(i,y);
+        }
+        x.stroke();
+      }
+      x.fillStyle = css('--trace'); x.font = '600 11px IBM Plex Mono, monospace';
+      x.fillText('FAULT · phase B', Math.min(Math.max(fx-40, 8), w-110), 40);
+    } else if(o.kind === 'flat'){
+      x.strokeStyle = '#ff6f6f'; x.lineWidth = 2; x.beginPath();
+      const L = 260, off = (t*0.08) % L;
+      for(let i=0;i<w;i++){ const y = h*0.7 - ecg(((i+off)%L)/L)*h*0.6; i? x.lineTo(i,y) : x.moveTo(i,y); }
+      x.stroke();
+    }
+  }
+
+  // Run only visible canvases
+  const vis = new Set();
+  const io = 'IntersectionObserver' in window ? new IntersectionObserver(es=>es.forEach(e=> e.isIntersecting ? vis.add(e.target) : vis.delete(e.target))) : null;
+  if(io){ io.observe(hero); cans.forEach(o=>io.observe(o.c)); } else { vis.add(hero); cans.forEach(o=>vis.add(o.c)); }
+
+  let last = 0, beat = 72;
+  function frame(t){
+    if(vis.has(hero)){ sweep = (sweep + 2.2) % Math.max(1, pts.length || 1); drawHero(); }
+    cans.forEach(o=>{ if(vis.has(o.c)) drawSmall(o, t); });
+    if(t - last > 1500){ last = t; beat = 70 + Math.round(Math.random()*6); document.getElementById('bpm').textContent = beat; }
+    requestAnimationFrame(frame);
+  }
+  if(reduce){ drawHero(); cans.forEach(o=>drawSmall(o, 900)); document.querySelectorAll('svg').forEach(s=>s.pauseAnimations && s.pauseAnimations()); }
+  else requestAnimationFrame(frame);
+
+  window.addEventListener('resize', ()=>{ H = fit(hero); pts.length = 0; cans.forEach(o=>o.s = fit(o.c)); if(reduce){ drawHero(); cans.forEach(o=>drawSmall(o,900)); } });
+
+  // Filters
+  const btns = document.querySelectorAll('.filters button');
+  btns.forEach(b=>b.addEventListener('click', ()=>{
+    btns.forEach(x=>x.setAttribute('aria-pressed', x===b ? 'true':'false'));
+    const f = b.dataset.f;
+    document.querySelectorAll('.proj').forEach(p=>{ p.hidden = !(f==='all' || p.dataset.cat.split(' ').includes(f)); });
+    cans.forEach(o=>{ o.s = fit(o.c); });
+  }));
+})();
+</script>
+</body>
+</html>
